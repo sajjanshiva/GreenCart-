@@ -19,7 +19,7 @@ const PORT = process.env.PORT || 4000;
 await connectDB();
 await connectCloudinary();
 
-app.post('/stripe', express.raw({type: 'application/json'}), stripeWebhooks );
+
 
 //allow multiple origins
 const allowedOrigins = [
@@ -28,6 +28,8 @@ const allowedOrigins = [
 
 
 app.use(cors({origin: allowedOrigins , credentials: true}));
+
+app.post('/stripe', express.raw({type: 'application/json'}), stripeWebhooks );
 
 //middleware
 app.use(express.json());
