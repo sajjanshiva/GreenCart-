@@ -23,8 +23,9 @@ await connectCloudinary();
 
 //allow multiple origins
 const allowedOrigins = [
-    'http://localhost:5173'
-]
+  'http://localhost:5173',        // local dev
+  'https://greencart-shiva4.vercel.app'  // deployed frontend
+];
 
 
 app.use(cors({origin: allowedOrigins , credentials: true}));
