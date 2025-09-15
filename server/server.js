@@ -28,10 +28,12 @@ const allowedOrigins = [
 ]
 
 
+app.use(cors({origin: allowedOrigins , credentials: true}));
+
 //middleware
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({origin: allowedOrigins , credentials: true}));
+
 
 app.get('/', (req, res) => {
     res.send('API is running');
