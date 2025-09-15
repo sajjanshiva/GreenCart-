@@ -22,7 +22,10 @@ await connectCloudinary();
 app.post('/stripe', express.raw({type: 'application/json'}), stripeWebhooks );
 
 //allow multiple origins
-const allowedOrigins = ['http://localhost:5173']
+const allowedOrigins = [
+    'http://localhost:5173',
+    'http://localhost:5174'  // Add this line
+]
 
 
 //middleware
