@@ -28,7 +28,17 @@ const allowedOrigins = [
 ];
 
 
-app.use(cors({origin: allowedOrigins , credentials: true}));
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', 'https://greencart-shiva4.vercel.app');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+  next();
+});
+
 
 
 app.post('/stripe', express.raw({type: 'application/json'}), stripeWebhooks );
@@ -43,6 +53,7 @@ app.use(cookieParser());
 app.get('/', (req, res) => {
     res.send('API is running');
 })
+
 app.use('/api/user', userRouter)
 app.use('/api/seller', sellerRouter)
 app.use('/api/products', productRouter);
