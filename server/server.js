@@ -22,13 +22,12 @@ await connectCloudinary();
 
 
 //allow multiple origins
-const allowedOrigins = [
+
+app.use(cors({origin: [
   'http://localhost:5173',        // local dev
   'https://greencart-shiva4.vercel.app'  // deployed frontend
-];
-
-
-app.use(cors({origin: allowedOrigins , credentials: true}));
+] , 
+credentials: true}));
 
 
 app.post('/stripe', express.raw({type: 'application/json'}), stripeWebhooks );
