@@ -25,7 +25,8 @@ await connectCloudinary();
 
 app.use(cors({origin: [
   'http://localhost:5173',        // local dev
-  'https://greencart-shiva4.vercel.app'  // deployed frontend
+  'https://greencart-shiva4.vercel.app',
+  'https://green-cart-sandy.vercel.app'    // deployed frontend
 ] , 
 credentials: true}));
 
