@@ -27,7 +27,7 @@ export const register = async (req, res) => {
     res.cookie('token', token, {
         httpOnly: true,  //prevent javascript to access cookie
         secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
-        sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'strict', // SameSite policy (CSRF Protection)
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict', // SameSite policy (CSRF Protection)
         maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
 
     })
@@ -69,7 +69,7 @@ export const login = async (req, res) => {
          res.cookie('token', token, {
         httpOnly: true,  //prevent javascript to access cookie
         secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
-        sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'strict', // SameSite policy (CSRF Protection)
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict', // SameSite policy (CSRF Protection)
         maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
 
         })
@@ -107,7 +107,7 @@ export const logout = async (req, res) => {
         res.clearCookie('token', {
             httpOnly: true,  //prevent javascript to access cookie
             secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
-            sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'strict', // SameSite policy (CSRF Protection)
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict', // SameSite policy (CSRF Protection)
             maxAge: 0 // Set maxAge to 0 to delete the cookie
         });
         return res.json({success: true, message: "User logged out successfully"});
