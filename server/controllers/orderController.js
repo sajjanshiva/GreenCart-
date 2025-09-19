@@ -10,7 +10,9 @@ import User from "../models/User.js";
 //place order COD : /api/order/cod
 export const placeOrderCOD = async (req, res) => {
     try{
-        const {userId, items,address} = req.body;
+
+        const userId = req.userId;
+        const { items,address} = req.body;
 
         if(!address || items.length === 0){
             return res.json({success: false, message: "All fields are required"});
