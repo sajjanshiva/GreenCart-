@@ -79,7 +79,7 @@ export const login = async (req, res) => {
 
 
     }catch(error){
-        console.error("Error in user registration:", error);
+        console.error("Error in user login:", error);
         return res.status(500).json({success: false, message: "Internal server error"});
     }
 }

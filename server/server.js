@@ -31,18 +31,21 @@ app.use(cors({origin: [
 credentials: true}));
 
 
-app.post('/stripe', express.raw({type: 'application/json'}), stripeWebhooks );
+
 
 //middleware
-app.use(express.json());
 app.use(cookieParser());
+app.use(express.json());
 
 
+
+app.post('/stripe', express.raw({type: 'application/json'}), stripeWebhooks );
 
 
 app.get('/', (req, res) => {
     res.send('API is running');
 })
+
 
 app.use('/api/user', userRouter)
 app.use('/api/seller', sellerRouter)
