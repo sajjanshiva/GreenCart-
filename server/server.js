@@ -12,13 +12,16 @@ import addressRouter from './routes/addressRoute.js';
 import orderRouter from './routes/orderRoute.js';
 import { stripeWebhooks } from './controllers/orderController.js';
 import { globalLimiter } from './middlewares/rateLimiter.js';
-
+import connectRabbitMQ from './Configs/rabbitmq.js';
+import { startConsumer } from './queues/consumer.js';
 
 const app = express();
 const PORT = process.env.PORT || 4000;
 
 await connectDB();
 await connectCloudinary();
+await connectRabbitMQ();
+await startConsumer();
 
 
 

@@ -6,8 +6,7 @@ import Order from "../models/Order.js";
 import Product from "../models/Product.js";
 import Stripe from "stripe";
 import User from "../models/User.js";
-import sendEmail from '../utils/sendEmail.js';
-import orderConfirmEmail from '../templates/orderConfirmEmail.js';
+import { sendToQueue } from '../queues/producer.js';
 
 //place order COD : /api/order/cod
 export const placeOrderCOD = async (req, res) => {
@@ -43,19 +42,15 @@ export const placeOrderCOD = async (req, res) => {
         // Get user email
         const user = await User.findById(userId);
 
-        // Send confirmation email
-        await sendEmail({
-            to: user.email,
-            subject: "Order Confirmed - GreenCart 🛒",
-            html: orderConfirmEmail({
-                orderId: populatedOrder._id,
-                items: populatedOrder.items,
-                amount: populatedOrder.amount,
-                address: populatedOrder.address,
-                paymentType: "COD"
-            })
-        });
-
+    // Push to queue instead of sending directly
+       await sendToQueue({
+           to: user.email,
+           orderId: populatedOrder._id,
+           items: populatedOrder.items,
+           amount: populatedOrder.amount,
+           address: populatedOrder.address,
+           paymentType: "COD"
+    });
         res.json({success: true, message: "Order placed successfully"});
 
     }catch(error){
@@ -178,17 +173,16 @@ export const stripeWebhooks = async (req, res) => {
          .populate("items.product address");
          const user = await User.findById(userId);
 
-        await sendEmail({
-           to: user.email,
-           subject: "Payment Confirmed - GreenCart 🛒",
-         html: orderConfirmEmail({
-                 orderId: populatedOrder._id,
-                items: populatedOrder.items,
-                amount: populatedOrder.amount,
-                address: populatedOrder.address,
-                paymentType: "Online"
-    })
-});
+      
+// Push to queue instead of sending directly
+      await sendToQueue({
+        to: user.email,
+        orderId: populatedOrder._id,
+         items: populatedOrder.items,
+        amount: populatedOrder.amount,
+        address: populatedOrder.address,
+        paymentType: "Online"
+      });
 
         console.log("Order marked as paid:", orderId);
         break;
