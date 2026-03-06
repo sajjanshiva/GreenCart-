@@ -21,6 +21,8 @@ const PORT = process.env.PORT || 4000;
 await connectDB();
 await connectCloudinary();
 await connectRabbitMQ();
+// Wait for connection to stabilize
+await new Promise(resolve => setTimeout(resolve, 2000));
 await startConsumer();
 
 
