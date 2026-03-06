@@ -6,13 +6,14 @@ import Order from "../models/Order.js";
 import Product from "../models/Product.js";
 import Stripe from "stripe";
 import User from "../models/User.js";
+import sendEmail from '../utils/sendEmail.js';
+import orderConfirmEmail from '../templates/orderConfirmEmail.js';
 
 //place order COD : /api/order/cod
 export const placeOrderCOD = async (req, res) => {
     try{
-
         const userId = req.userId;
-        const { items,address} = req.body;
+        const { items, address } = req.body;
 
         if(!address || items.length === 0){
             return res.json({success: false, message: "All fields are required"});
@@ -21,18 +22,39 @@ export const placeOrderCOD = async (req, res) => {
         let amount = await items.reduce(async (acc, item) =>{
             const product = await Product.findById(item.product);
             return (await acc) + (product.offerPrice * item.quantity);
-        },0);
+        }, 0);
 
-        //Add Tax charge (2%)
+        // Add Tax charge (2%)
         amount += Math.floor(amount * 0.02);
 
-        await Order.create({
+        // Save order and use _id directly
+        const order = await Order.create({
             userId,
             items,
             amount,
             address,
             paymentType: "COD",
-        })
+        });
+
+        // Populate order for email
+        const populatedOrder = await Order.findById(order._id)
+            .populate("items.product address");
+
+        // Get user email
+        const user = await User.findById(userId);
+
+        // Send confirmation email
+        await sendEmail({
+            to: user.email,
+            subject: "Order Confirmed - GreenCart 🛒",
+            html: orderConfirmEmail({
+                orderId: populatedOrder._id,
+                items: populatedOrder.items,
+                amount: populatedOrder.amount,
+                address: populatedOrder.address,
+                paymentType: "COD"
+            })
+        });
 
         res.json({success: true, message: "Order placed successfully"});
 
@@ -41,6 +63,7 @@ export const placeOrderCOD = async (req, res) => {
         res.json({success: false, message: error.message});
     }
 }
+
 
 //place order Stripe : /api/order/stripe
 export const placeOrderStripe = async (req, res) => {
@@ -147,7 +170,25 @@ export const stripeWebhooks = async (req, res) => {
         await Order.findByIdAndUpdate(orderId, { isPaid: true });
 
         // Clear user cart
-        await User.findByIdAndUpdate(userId, { cartItems: [] });
+        await User.findByIdAndUpdate(userId, { cartItems: {} });
+
+
+               // Send confirmation email
+         const populatedOrder = await Order.findById(orderId)
+         .populate("items.product address");
+         const user = await User.findById(userId);
+
+        await sendEmail({
+           to: user.email,
+           subject: "Payment Confirmed - GreenCart 🛒",
+         html: orderConfirmEmail({
+                 orderId: populatedOrder._id,
+                items: populatedOrder.items,
+                amount: populatedOrder.amount,
+                address: populatedOrder.address,
+                paymentType: "Online"
+    })
+});
 
         console.log("Order marked as paid:", orderId);
         break;
