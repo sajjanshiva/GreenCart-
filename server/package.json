@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@upstash/redis": "^1.36.3",
     "amqplib": "^0.10.9",
     "bcryptjs": "^3.0.2",
     "cloudinary": "^2.7.0",
