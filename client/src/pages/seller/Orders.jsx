@@ -32,9 +32,9 @@ const Orders = () => {
             const { data } = await axios.get(url);
             if (data.success) {
                 setOrders(data.orders);
-                setCurrentPage(data.pagination.currentPage);
-                setTotalPages(data.pagination.totalPages);
-                setTotalOrders(data.pagination.totalOrders);
+               setCurrentPage(data.pagination?.currentPage || 1);
+              setTotalPages(data.pagination?.totalPages || 1);
+               setTotalOrders(data.pagination?.totalOrders || 0);
             } else {
                 toast.error(data.message);
             }
