@@ -230,21 +230,68 @@ export const getUserOrders = async (req, res) => {
 }
 
 
-//Get All Orders (for seller or admin): /api/order/seller
 
+//Get All Orders with pagination + filters : /api/order/seller
 export const getAllOrders = async (req, res) => {
-    try{
-        const orders = await Order.find({
-            $or : [{paymentType: "COD"}, {isPaid: true}]
-        })
-        .populate("items.product address")
-        .sort({createdAt: -1});
-   
-         res.json({success: true, orders});
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = (page - 1) * limit;
+        const { status, startDate, endDate } = req.query;
 
+        let filter = {
+            $or: [{ paymentType: "COD" }, { isPaid: true }]
+        };
 
-    }catch(error){
+        if (status && status !== 'All') {
+            filter.status = status;
+        }
+
+        if (startDate || endDate) {
+            filter.createdAt = {};
+            if (startDate) filter.createdAt.$gte = new Date(startDate);
+            if (endDate) {
+                const end = new Date(endDate);
+                end.setHours(23, 59, 59, 999);
+                filter.createdAt.$lte = end;
+            }
+        }
+
+        const totalOrders = await Order.countDocuments(filter);
+        const totalPages = Math.ceil(totalOrders / limit);
+
+        const orders = await Order.find(filter)
+            .populate("items.product address")
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit);
+
+        res.json({
+            success: true,
+            orders,
+            pagination: {
+                currentPage: page,
+                totalPages,
+                totalOrders,
+                hasNextPage: page < totalPages,
+                hasPrevPage: page > 1
+            }
+        });
+
+    } catch (error) {
         console.log(error.message);
-        res.json({success: false, message: error.message});
+        res.json({ success: false, message: error.message });
+    }
+}
+
+// Update Order Status : /api/order/status
+export const updateOrderStatus = async (req, res) => {
+    try {
+        const { orderId, status } = req.body;
+        await Order.findByIdAndUpdate(orderId, { status });
+        res.json({ success: true, message: "Order status updated" });
+    } catch (error) {
+        console.log(error.message);
+        res.json({ success: false, message: error.message });
     }
 }
