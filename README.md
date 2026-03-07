@@ -13,8 +13,8 @@ The platform includes **production-grade backend features** like **Redis caching
 
 # 🚀 Live Demo
 
-Frontend: [https://your-frontend-url](https://your-frontend-url)
-Backend API: [https://your-backend-url](https://your-backend-url)
+Frontend: [https://your-frontend-url](https://greencart-shiva4.vercel.app/)
+Backend API: [https://your-backend-url](https://greencart-4m6x.onrender.com)
 
 ---
 
